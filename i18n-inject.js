@@ -146,7 +146,7 @@
 
   function processAttributes(el) {
     if (!el || el.nodeType !== 1 || shouldSkipAttributeElement(el)) return;
-    const attrs = ['placeholder', 'aria-label', 'title'];
+    const attrs = ['placeholder', 'data-placeholder', 'aria-label', 'title'];
     for (const attr of attrs) {
       if (!el.hasAttribute(attr)) continue;
       const val = el.getAttribute(attr);
@@ -422,7 +422,7 @@
       subtree: true,
       characterData: true,
       attributes: true,
-      attributeFilter: ['placeholder', 'aria-label', 'title'],
+      attributeFilter: ['placeholder', 'data-placeholder', 'aria-label', 'title'],
     });
   }
 

@@ -262,6 +262,29 @@
     "Files Changed": "变更文件",
     "Terminals": "终端",
 
+    "Automatic Check for Updates": "自动检查更新",
+    "Automatically prompt you to restart the app when a new update is available. When disabled, you can check for updates manually from the app menu.": "当有新版本可用时自动提示重启应用。关闭后，你仍可在应用菜单中手动检查更新。",
+    "Chat Layout": "对话布局",
+    "Configure the maximum width of the conversation panel.": "配置对话面板的最大显示宽度。",
+    "Narrow": "窄屏",
+    "Wide": "宽屏",
+    "Fill": "铺满",
+    "Accessibility": "无障碍",
+    "Screen Reader Mode": "屏幕阅读器模式",
+    "Optimize the interface and terminal output for screen readers.": "针对屏幕阅读器优化界面与终端输出。",
+
+    "Only this conversation uses this preset.": "仅当前对话使用此预设。",
+    "This Conversation": "当前对话",
+    "Request Review": "请求确认",
+    "Every command requires approval.": "每条命令均需人工确认。",
+    "Ask before sensitive operations.": "敏感操作前弹窗询问。",
+    "Auto": "自动",
+    "Automatically decide if commands run.": "自动判断命令是否可直接执行。",
+    "Run all commands without restrictions.": "无限制自动运行所有命令。",
+    "Review": "查看变更",
+    "Ask anything, @ to mention, / for actions": "输入任意内容，@ 引用上下文，/ 触发快捷操作",
+    "Just now": "刚刚",
+
     "Search": "搜索",
     "Cancel": "取消",
     "Save": "保存",
@@ -309,6 +332,26 @@
     {
       "regex": "^Hide (\\d+) breakdowns?$",
       "replace": "收起 $1 项明细"
+    },
+    {
+      "regex": "^(\\d+)\\s+files?\\s+changed$",
+      "replace": "$1 个文件已更改"
+    },
+    {
+      "regex": "^(\\d+)\\s*s\\s+ago$",
+      "replace": "$1 秒前"
+    },
+    {
+      "regex": "^(\\d+)\\s*m\\s+ago$",
+      "replace": "$1 分钟前"
+    },
+    {
+      "regex": "^(\\d+)\\s*h\\s+ago$",
+      "replace": "$1 小时前"
+    },
+    {
+      "regex": "^(\\d+)\\s*d\\s+ago$",
+      "replace": "$1 天前"
     }
   ],
   "attributes": {
@@ -317,6 +360,7 @@
     "Search shortcuts...": "搜索快捷键...",
     "Describe the bug you encountered...": "请描述你遇到的 Bug...",
     "Please list the steps to reproduce the issue": "请列出复现该问题的步骤",
+    "Ask anything, @ to mention, / for actions": "输入任意内容，@ 引用上下文，/ 触发快捷操作",
     "Ask anything...": "输入任何问题..."
   }
 }
