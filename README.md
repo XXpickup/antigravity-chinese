@@ -39,7 +39,7 @@
 
 ### 2. 获取项目
 ```bash
-git clone https://github.com/2813268700-cell/antigravity-i18n-patch.git
+git clone https://github.com/XXpickup/antigravity-i18n-patch.git
 cd antigravity-i18n-patch
 ```
 
