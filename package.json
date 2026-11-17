@@ -1,0 +1,21 @@
+{
+  "name": "antigravity-i18n-patch",
+  "version": "1.0.0",
+  "description": "Zero-dependency runtime DOM i18n switcher (Chinese/English) for Google Antigravity desktop app.",
+  "type": "module",
+  "scripts": {
+    "patch": "node patch.mjs",
+    "restore": "node restore.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "antigravity",
+    "i18n",
+    "chinese",
+    "localization",
+    "electron"
+  ],
+  "license": "MIT"
+}
