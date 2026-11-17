@@ -4,6 +4,12 @@
 
 ---
 
+## 效果预览
+
+![Antigravity 2.0 简体中文界面示例](./assets/settings-general-zh.png)
+
+---
+
 ## 一、 项目解决什么问题
 
 1. **官方界面全英文且无语言开关**：目前 Google Antigravity 2.0 桌面端（Electron 架构）的左侧导航栏、`Settings`（常规、应用设置、外观、快捷键、通知、模型、浏览器）、项目配置及反馈页面均为纯英文，未提供内置的多语言（i18n）切换选项。
