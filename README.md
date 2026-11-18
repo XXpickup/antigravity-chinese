@@ -22,6 +22,9 @@
 
 ## 二、 主要功能
 
+* **双模式可选**：
+  * **免改安装包 CDP 模式（推荐）**：通过 Electron 本地调试协议（CDP）动态注入，**不修改 `app.asar` 文件**，官方客户端自动更新后依然生效，且可覆盖主窗口及本地扩展面板；支持 Windows 一键生成桌面中文版快捷方式（`node launch-cdp.mjs --shortcut`）。
+  * **静态补丁模式（`patch.mjs`）**：向 `dist/preload.js` 注入脚本，无需任何后台监视进程，直接点原版图标即可使用。
 * **中 / 英文实时无损切换**：安装后默认显示简体中文；支持快捷键 **`Alt + Shift + L`** 或点击窗口右下角 **`中 / En`** 悬浮胶囊按钮随时切回英文（通过 `localStorage` 自动记忆语言偏好）。
 * **全面覆盖核心设置与菜单**：内置 **310+ 条静态词条、11 条动态正则模板、7 条输入框占位提示**，覆盖主侧边栏及筛选排序菜单、对话区权限弹窗、报错弹窗、`Settings` 全部 7 个子页面（含高级设置）、项目权限页与意见反馈页。
 * **动态文本与倒计时正则翻译**：支持对包含动态数值的句子（如模型配额剩余刷新时间 `6 days, 22 hours`、`Show 4 breakdowns`、当前订阅方案名称等）进行自动匹配汉化。
@@ -43,7 +46,23 @@ git clone https://github.com/XXpickup/antigravity-chinese.git
 cd antigravity-chinese
 ```
 
-### 3. 退出客户端并执行安装
+### 3. 选择一种方式运行
+
+#### 方式 A：免改安装包 CDP 启动模式（推荐，客户端升级不失效）
+无需修改 `app.asar` 安装文件，会自动连接正在运行的 Antigravity 或拉起客户端并动态注入汉化：
+
+```powershell
+# 启动 Antigravity 并实时注入中文（或运行 npm run cdp）
+node launch-cdp.mjs
+
+# 仅连接当前已经打开的 Antigravity（不重启软件）
+node launch-cdp.mjs --attach-only
+
+# （Windows）在桌面生成“Antigravity (中文版)”一键启动快捷方式
+node launch-cdp.mjs --shortcut
+```
+
+#### 方式 B：静态补丁模式（直接改 `app.asar`，无需后台驻留进程）
 
 **Windows（PowerShell）：**
 ```powershell
@@ -184,12 +203,14 @@ PS C:\antigravity-i18n-patch> node restore.mjs
 
 | 文件名 | 作用说明 |
 | :--- | :--- |
-| `patch.mjs` | 补丁安装入口：检测进程状态、自动备份 `app.asar.bak`、合成词典并注入 `dist/preload.js` |
+| `launch-cdp.mjs` | 免改安装包 CDP 模式入口：自动发现或启动 Antigravity 调试端口并实时注入 |
+| `cdp-client.mjs` | 零第三方依赖的纯 Node.js WebSocket / CDP 通信客户端 |
+| `patch.mjs` | 静态补丁安装入口：检测进程状态、自动备份 `app.asar.bak`、合成词典并注入 `dist/preload.js` |
 | `restore.mjs` | 还原入口：从 `app.asar.bak` 恢复原版或剥离注入代码块 |
 | `i18n-inject.js` | 运行时前端 DOM 翻译器、原文缓存与右下角 `中 / En` 悬浮组件 |
 | `dictionary.json` | 简体中文翻译词库（包含 `exact`、`patterns`、`attributes` 三部分） |
 | `asar-lib.mjs` | 零依赖纯 Node.js 的 Electron ASAR 归档解析、重打包与 SHA-256 校验计算模块 |
-| `cli-utils.mjs` | 跨平台（Windows / macOS / Linux）默认路径探测与运行进程检查工具 |
+| `cli-utils.mjs` | 跨平台（Windows / macOS / Linux）路径探测、脚本合成与进程检查工具 |
 
 ---
 

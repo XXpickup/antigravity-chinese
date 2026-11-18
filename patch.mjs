@@ -1,8 +1,9 @@
-import { copyFileSync, existsSync, readFileSync, renameSync, unlinkSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { copyFileSync, existsSync, renameSync, unlinkSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readAsar, writeAsar } from './asar-lib.mjs';
 import {
+  buildInjectScript,
   isAntigravityRunning,
   MARKER_END,
   MARKER_START,
@@ -34,10 +35,7 @@ function main() {
     process.exit(1);
   }
 
-  const dict = JSON.parse(readFileSync(join(__dirname, 'dictionary.json'), 'utf8'));
-  const injectTpl = readFileSync(join(__dirname, 'i18n-inject.js'), 'utf8');
-  const injectCode = injectTpl.replace('__AGY_I18N_DICT__', () => JSON.stringify(dict));
-
+  const injectCode = buildInjectScript(__dirname);
   const { header, files } = readAsar(asarPath);
   const preloadEntry = files.get('dist/preload.js');
   if (!preloadEntry) {

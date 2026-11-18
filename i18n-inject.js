@@ -288,7 +288,7 @@
   }
 
   function mountToggleUI() {
-    if (window !== window.top) return;
+    if (window !== window.top || window.innerWidth < 480) return;
     if (!document.body || document.getElementById('agy-i18n-host')) return;
 
     const host = document.createElement('div');
@@ -372,7 +372,10 @@
   }
 
   function startObserver() {
-    if (!document.body) return;
+    if (!document.body) {
+      setTimeout(startObserver, 50);
+      return;
+    }
     applyTree(document.body);
     mountToggleUI();
 
