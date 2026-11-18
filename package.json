@@ -1,6 +1,6 @@
 {
-  "name": "antigravity-i18n-patch",
-  "version": "1.0.2",
+  "name": "antigravity-chinese",
+  "version": "1.0.3",
   "description": "Zero-dependency runtime DOM i18n switcher (Chinese/English) for Google Antigravity desktop app.",
   "type": "module",
   "scripts": {
