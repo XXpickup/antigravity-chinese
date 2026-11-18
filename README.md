@@ -26,7 +26,7 @@
   * **免改安装包 CDP 模式（推荐）**：通过 Electron 本地调试协议（CDP）动态注入，**不修改 `app.asar` 文件**，官方客户端自动更新后依然生效，且可覆盖主窗口及本地扩展面板；支持 Windows 一键生成桌面中文版快捷方式（`node launch-cdp.mjs --shortcut`）。
   * **静态补丁模式（`patch.mjs`）**：向 `dist/preload.js` 注入脚本，无需任何后台监视进程，直接点原版图标即可使用。
 * **中 / 英文实时无损切换**：安装后默认显示简体中文；支持快捷键 **`Alt + Shift + L`** 或点击窗口右下角 **`中 / En`** 悬浮胶囊按钮随时切回英文（通过 `localStorage` 自动记忆语言偏好）。
-* **全面覆盖核心设置与菜单**：内置 **310+ 条静态词条、11 条动态正则模板、7 条输入框占位提示**，覆盖主侧边栏及筛选排序菜单、对话区权限弹窗、报错弹窗、`Settings` 全部 7 个子页面（含高级设置）、项目权限页与意见反馈页。
+* **全面覆盖核心设置与菜单**：内置 **4,669 条静态词条、403 条动态正则模板、7 条输入框占位提示**，全面覆盖主侧边栏、筛选排序菜单、对话区权限弹窗、报错弹窗、插件市场、Swarm 面板、`Settings` 全部子页面（含高级设置）、项目权限页与意见反馈页。
 * **动态文本与倒计时正则翻译**：支持对包含动态数值的句子（如模型配额剩余刷新时间 `6 days, 22 hours`、`Show 4 breakdowns`、当前订阅方案名称等）进行自动匹配汉化。
 * **React 安全与代码区隔离**：仅替换纯文本节点（`Text.nodeValue`）与表单提示属性（`placeholder` / `aria-label` / `title`），不增删 DOM 标签；自动跳过 `<pre>`、`<code>`、`<textarea>`、`<input>` 输入内容以及 Monaco / Xterm 代码与终端区域。
 * **一键采集未翻译词条**：在任意界面按下 **`Ctrl + Shift + U`**（或右键点击右下角 **`中`** 按钮），自动扫描当前页面尚未收录的英文短句并复制为 JSON 数组到剪贴板，方便快速扩充词库。
@@ -214,7 +214,10 @@ PS C:\antigravity-i18n-patch> node restore.mjs
 
 ---
 
-## 七、 免责声明与开源协议
+## 七、 免责声明、致谢与开源协议
 
-* 本项目为非官方社区本地化工具，仅在用户本机修改 `resources/app.asar` 内的预加载脚本，不包含任何联网请求或数据收集行为。
+* 本项目为非官方社区本地化工具，仅在用户本机运行动态注入或修改 `resources/app.asar` 内的预加载脚本，不包含任何联网请求或数据收集行为。
+* 词库中部分高质量社区词条整合自以下 MIT 开源项目（详见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)）：
+  * [yiheng8023/antigravity-chinese](https://github.com/yiheng8023/antigravity-chinese)（MIT License）
+  * [renkeshui/antigravity-chinese-locale](https://github.com/renkeshui/antigravity-chinese-locale)（MIT License）
 * 本项目采用 [MIT License](./LICENSE) 开源，欢迎提交 Issue 或 Pull Request 共同完善词典！

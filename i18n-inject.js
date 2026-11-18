@@ -8,11 +8,17 @@
   const DICT = __AGY_I18N_DICT__;
   const STORAGE_KEY = 'agy_ui_lang';
 
-  const COMPILED_PATTERNS = (DICT.patterns || []).map((p) => ({
-    re: new RegExp(p.regex),
-    replace: p.replace,
-    translateTimeUnits: Boolean(p.translateTimeUnits),
-  }));
+  const COMPILED_PATTERNS = (DICT.patterns || []).flatMap((p) => {
+    try {
+      return [{
+        re: new RegExp(p.regex, p.flags || ''),
+        replace: p.replace ?? p.replacement ?? '',
+        translateTimeUnits: Boolean(p.translateTimeUnits),
+      }];
+    } catch {
+      return [];
+    }
+  });
 
   const SKIP_TAGS = new Set([
     'SCRIPT',
@@ -29,7 +35,9 @@
     'SVG',
   ]);
 
-  const MAX_TEXT_LEN = 300;
+  const MAX_TEXT_LEN = 1200;
+  const MAX_PATTERN_LEN = 350;
+  const MAX_COLLECT_LEN = 300;
   const originalTextMap = new WeakMap();
   const originalAttrMap = new WeakMap();
 
@@ -86,7 +94,7 @@
     if (exactHit) {
       return lead + exactHit + trail;
     }
-    if (usePatterns) {
+    if (usePatterns && normalized.length <= MAX_PATTERN_LEN && /[A-Za-z]/.test(normalized)) {
       for (const pat of COMPILED_PATTERNS) {
         const m = pat.re.exec(normalized);
         if (m) {
@@ -239,7 +247,7 @@
         const raw = (node.nodeValue || '').replace(/\s+/g, ' ').trim();
         if (
           raw &&
-          raw.length <= MAX_TEXT_LEN &&
+          raw.length <= MAX_COLLECT_LEN &&
           /[A-Za-z]{2,}/.test(raw) &&
           !originalTextMap.has(node) &&
           !(raw in DICT.exact) &&
