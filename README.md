@@ -55,7 +55,10 @@ cd antigravity-chinese
 # 启动 Antigravity 并实时注入中文（或运行 npm run cdp）
 node launch-cdp.mjs
 
-# 仅连接当前已经打开的 Antigravity（不重启软件）
+# 若 Antigravity 刚自动更新完以无调试端口状态运行，自动重启并注入中文：
+node launch-cdp.mjs --restart
+
+# 仅连接当前已经带调试端口运行的 Antigravity（不重启软件）
 node launch-cdp.mjs --attach-only
 
 # （Windows）在桌面生成“Antigravity (中文版)”一键启动快捷方式

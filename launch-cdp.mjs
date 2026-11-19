@@ -100,7 +100,7 @@ function createDesktopShortcut() {
 $ws = New-Object -ComObject WScript.Shell
 $sc = $ws.CreateShortcut('${shortcutPath.replace(/'/g, "''")}')
 $sc.TargetPath = '${process.execPath.replace(/'/g, "''")}'
-$sc.Arguments = '"${scriptPath.replace(/'/g, "''")}"'
+$sc.Arguments = '"${scriptPath.replace(/'/g, "''")}" --gui-prompt'
 $sc.WorkingDirectory = '${__dirname.replace(/'/g, "''")}'
 $sc.WindowStyle = 7
 if (Test-Path '${iconPath.replace(/'/g, "''")}') { $sc.IconLocation = '${iconPath.replace(/'/g, "''")},0' }
@@ -109,6 +109,34 @@ $sc.Save()
 `;
   execFileSync('powershell', ['-NoProfile', '-Command', ps], { stdio: 'inherit' });
   console.log(`已创建桌面快捷方式：${shortcutPath}`);
+}
+
+function stopAntigravityProcess() {
+  if (process.platform === 'win32') {
+    execFileSync('taskkill', ['/F', '/IM', 'Antigravity.exe'], { stdio: 'ignore' });
+  } else {
+    execFileSync('pkill', ['-x', 'Antigravity'], { stdio: 'ignore' });
+  }
+}
+
+function askGuiRestartWindows() {
+  if (process.platform !== 'win32') return false;
+  try {
+    const ps = `
+Add-Type -AssemblyName System.Windows.Forms
+$res = [System.Windows.Forms.MessageBox]::Show(
+  "检测到 Antigravity 已在运行，但未开启 CDP 调试端口（常见于刚自动更新完或从原版图标启动）。\`n\`n是否立即重启 Antigravity 以开启中文界面？",
+  "Antigravity 中文版 (CDP 模式)",
+  [System.Windows.Forms.MessageBoxButtons]::YesNo,
+  [System.Windows.Forms.MessageBoxIcon]::Question
+)
+if ($res -eq [System.Windows.Forms.DialogResult]::Yes) { exit 0 } else { exit 1 }
+`;
+    execFileSync('powershell', ['-NoProfile', '-STA', '-Command', ps], { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 async function attachTarget(target, injectCode, clients) {
@@ -139,6 +167,8 @@ async function main() {
   }
 
   const attachOnly = process.argv.includes('--attach-only');
+  const forceRestart = process.argv.includes('--restart');
+  const guiPrompt = process.argv.includes('--gui-prompt');
   const portArg = getArgValue('--port');
   const explicitPort = portArg ? Number(portArg) : 0;
   const injectCode = buildInjectScript(__dirname);
@@ -148,7 +178,7 @@ async function main() {
 
   if (!found) {
     if (attachOnly) {
-      console.error('未检测到可连接的 Antigravity 调试端口。请先启动 Antigravity 后重试。');
+      console.error('未检测到可连接的 Antigravity 调试端口。请先使用 node launch-cdp.mjs 启动后重试。');
       process.exit(1);
     }
 
@@ -159,10 +189,36 @@ async function main() {
       process.exit(1);
     }
 
-    const args = explicitPort ? [`--remote-debugging-port=${explicitPort}`] : [];
     if (isAntigravityRunning()) {
-      console.log('检测到 Antigravity 已在运行但暂未发现调试端口，尝试等待端口就绪...');
-    } else {
+      // Brief grace wait in case Antigravity was just launched moments ago
+      for (let i = 0; i < 4 && !found; i++) {
+        await sleep(350);
+        found = await probeCdpPort(explicitPort);
+      }
+
+      if (!found) {
+        const shouldRestart = forceRestart || (guiPrompt && askGuiRestartWindows());
+        if (!shouldRestart) {
+          console.error('检测到当前运行的 Antigravity 未开启 CDP 调试端口（常见于刚自动更新完或从原版图标启动）。');
+          console.error('请先完全退出 Antigravity（含后台托盘），或运行 node launch-cdp.mjs --restart 重启开启中文。');
+          process.exit(1);
+        }
+
+        console.log('正在重启 Antigravity 以开启 CDP 调试端口...');
+        try {
+          stopAntigravityProcess();
+        } catch {
+          // Ignore if already exiting
+        }
+        const stopDeadline = Date.now() + 6000;
+        while (Date.now() < stopDeadline && isAntigravityRunning()) {
+          await sleep(250);
+        }
+      }
+    }
+
+    if (!found) {
+      const args = [`--remote-debugging-port=${explicitPort || 0}`];
       console.log(`正在启动 Antigravity（免改安装包 CDP 模式）: ${exePath}`);
       const child = spawn(exePath, args, {
         detached: true,
@@ -170,19 +226,19 @@ async function main() {
       });
       child.unref();
       launchedByUs = true;
-    }
 
-    const deadline = Date.now() + 25000;
-    while (Date.now() < deadline) {
-      found = await probeCdpPort(explicitPort);
-      if (found) break;
-      await sleep(400);
-    }
+      const deadline = Date.now() + 25000;
+      while (Date.now() < deadline) {
+        found = await probeCdpPort(explicitPort);
+        if (found) break;
+        await sleep(400);
+      }
 
-    if (!found) {
-      console.error('等待 Antigravity CDP 调试端口超时。');
-      console.error('如果之前运行着未带调试端口的 Antigravity，请先完全退出后再运行本命令。');
-      process.exit(1);
+      if (!found) {
+        console.error('等待 Antigravity CDP 调试端口超时。');
+        console.error('请检查是否仍有未带调试端口的 Antigravity 后台进程残留。');
+        process.exit(1);
+      }
     }
   } else {
     console.log(`已连接运行中的 Antigravity CDP 端口: ${found.port}`);

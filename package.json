@@ -1,10 +1,11 @@
 {
   "name": "antigravity-chinese",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Zero-dependency runtime Chinese/English UI switcher for Google Antigravity desktop app (CDP & ASAR patch modes).",
   "type": "module",
   "scripts": {
     "cdp": "node launch-cdp.mjs",
+    "cdp:restart": "node launch-cdp.mjs --restart",
     "cdp:attach": "node launch-cdp.mjs --attach-only",
     "shortcut": "node launch-cdp.mjs --shortcut",
     "patch": "node patch.mjs",
