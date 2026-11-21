@@ -1,6 +1,6 @@
 {
   "name": "antigravity-chinese",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Zero-dependency runtime Chinese/English UI switcher for Google Antigravity desktop app (CDP & ASAR patch modes).",
   "type": "module",
   "scripts": {
